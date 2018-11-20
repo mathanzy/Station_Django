@@ -7,8 +7,7 @@ under linux(some mirror error without being corrected right now!)
 
 
 ### Tools:
-#### 1.1 Django
-#### 1.2 echarts
+Django+echarts
 
 -----
 ### Functional:
