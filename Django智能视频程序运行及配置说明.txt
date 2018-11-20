@@ -1,0 +1,15 @@
+一、需要修改的地方
+   1.修改 ..\WebApp_Project\stations\stations\settings.py中的ALLOWED_HOSTS = ['172.28.3.88',]。将ip修改为本机ip
+
+二、程序启动步骤
+   1. 命令行下cd到WebApp_Project下的venv(与stations同级），在命令提示符'>'后输入Scripts\activate。这样便启动了虚拟环境（venv）
+   2. 完成第一步后，输入cd ..返回到WebApp_Project目录下
+   3. 输入cd stations，进入stationis目录中
+   4. 输入 python manage.py runserver ip(本机):8000。这样便完成了Django程序的启动
+
+三、如何测试Django的后台程序是否启动？
+   1. 打开浏览器输入以下网址：
+     1）人流量统计：     http://ip(本机）:8000/taiyuan/flowcount/      
+     2) 排队长度：       http://ip(本机）:8000/taiyuan/queuelength/
+     3) 缓冲厅人数统计： http://ip(本机）:8000/taiyuan/bufferroom/
+     4) 候车厅人数统计： http://ip(本机）:8000/taiyuan/stationhallcount/
