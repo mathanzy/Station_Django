@@ -1,0 +1,20 @@
+/* 压力盘样式：左对齐 */
+.l123{
+     float:left;
+     width:500px;
+}
+.l124{
+     float:right;
+     width:500px;
+}
+/* 压力盘之后表格样式：宽度自适应100%，保证后面的图表不重叠 */
+.l1{
+    float:left;
+    width:100%;
+}
+
+.background{
+    background-image:url({% static 'img/login.png' %});
+    background-attachment:fixed;
+    background-repeat:no-repeat;
+}

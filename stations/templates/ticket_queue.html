@@ -1,0 +1,82 @@
+{% load staticfiles %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>售票厅</title>
+    <!-- 引入 echarts.js -->
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script src="/static/js/echarts.min.js"></script>
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge"/>-->
+</head>
+<!--<body>-->
+<body style="background-attachment:fixed;background-image:url({% static 'img/login.png' %});
+background-repeat:no-repeat;background-size:100% 150%;opacity:0.8;">
+<!--<body bgcolor="#21557c">-->
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 950px;height:500px;"></div>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'),'light');
+        // 显示标题，图例和空的坐标轴
+        myChart.setOption({
+            <!--backgroundColor:'#21557c',-->
+            title: {
+            x:'center',
+            text: '太原站售票厅排队',
+            textStyle:{
+                    fontSize:20,
+                    color:'#F8F8FF',
+                    },
+            },
+            grid:{x:20,y:50,x2:30,y2:50},
+            tooltip: {},
+            legend: {
+                y:'bottom',
+                data:[{name:'售票厅',textStyle:{color:'#F8F8FF'}}]
+            },
+            xAxis: {
+                axisLine:{lineStyle:{color:'#F8F8FF',width:2}},
+                data: ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]
+            },
+            yAxis: {axisLine:{lineStyle:{color:'#F8F8FF',width:2}},},
+            series: [{
+                name: '售票厅',
+                type: 'bar',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top',
+                        color:'#F8F8FF',
+                        }
+                    },
+                color:'#90EE90',
+                barCategoryGap:'10%',
+                barWidth:50,
+                data: [],
+                itemStyle:{emphasis:{color:'#ADFF2F'}}
+            }]
+        });
+        // 异步加载数据
+        $(document).ready(function(){
+            function refresh(){
+                $.ajaxSetup({cache:false});
+                $.getJSON("/taiyuan/queue_fresh/", function (ret) {
+                    // 填入数据
+                    myChart.setOption({
+                        <!--xAxis: {-->
+                        <!--data: data.categories-->
+                        <!--},-->
+                    series: [{
+                        // 根据名字对应到相应的系列
+                        name: '售票厅',
+                        data: ret.data
+                        }]
+                    });
+                });
+            }
+            setInterval(refresh, 3000)
+            })
+    </script>
+</body>
+</html>

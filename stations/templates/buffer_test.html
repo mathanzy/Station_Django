@@ -1,0 +1,114 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>缓冲厅</title>
+    <!-- 引入 echarts.js -->
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script src="/static/js/echarts.min.js"></script>
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge"/>-->
+</head>
+<body style="background-attachment:fixed;background-image:url({% static 'img/login.png' %});
+background-repeat:no-repeat;background-size:100% 150%;opacity:0.8;">
+<!--<body bgcolor="#21557c">-->
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 950px;height:500px;"></div>
+        <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'),'light');
+        // 显示标题，图例和空的坐标轴
+        var date = [];
+        var data = [];
+
+        option = {
+            title: {
+                x:'center',
+                text: '缓冲厅实时人数分布 /人',
+                textStyle:{
+                    fontSize:20,
+                    color:'#F8F8FF',
+                    },
+                },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: '#F08080'
+                    }
+                 }
+            },
+            grid:{x:28,y:50,x2:30,y2:50},
+            xAxis: {
+                axisLine:{lineStyle:{color:'#F8F8FF',width:2}},
+                type: 'category',
+                boundaryGap: false,
+                data: date
+                },
+            yAxis: {
+                axisLine:{lineStyle:{color:'#F8F8FF',width:2}},
+                boundaryGap: [0, '50%'],
+                type: 'value'
+                },
+            series: [
+                {
+                    name:'实时人数',
+                    type:'line',
+                    smooth:true,
+                    symbol: 'none',
+                    <!--stack: 'a',-->
+                    areaStyle: {
+                        normal: {color:'#98FB98',}
+                        },
+                    data: data
+                }
+                ]
+            };
+        myChart.setOption(option, true);
+        // 异步加载数据
+        $(document).ready(function(){
+            myChart.showLoading();
+            $.getJSON("/taiyuan/buffer_before/",function(ret){
+                date = ret.date;
+                data = ret.data;
+
+                myChart.setOption({
+                        xAxis: {
+                            data: data
+                            },
+                        series: [{
+                            name:'实时人数',
+                            data: date
+                            }]
+                        });
+            });
+            function refresh(){
+                myChart.hideLoading();
+                $.ajaxSetup({cache:false});
+                $.getJSON("/taiyuan/buffer_fresh/", function (ret) {
+                    if (ret.date_new == date[59]){
+                        return;
+                        }
+                    else {
+                        date.push(ret.date_new);
+                        data.push(ret.data_new);
+                        date.shift();
+                        data.shift();
+                        <!--myChart.setOption(option);-->
+                        myChart.setOption({
+                            xAxis: {
+                                data: date
+                                },
+                            series: [{
+                                name:'实时人数',
+                                data: data
+                                }]
+                            });
+                        }
+                    });
+            }
+            setInterval(refresh, 3000)
+            })
+    </script>
+</body>
+</html>

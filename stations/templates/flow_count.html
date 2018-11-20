@@ -1,0 +1,138 @@
+{% load staticfiles %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>人流量统计</title>
+    <!-- 引入 echarts.js -->
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script src="/static/js/echarts.min.js"></script>
+</head>
+<body style="background-attachment:fixed;background-image:url({% static 'img/login.png' %});
+background-repeat:no-repeat;background-size:100% 150%;opacity:0.8;">
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 950px;height:500px;"></div>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'),'light');
+        // 显示标题，图例和空的坐标轴
+        option = {
+            title: {
+                x:'center',
+                text: '进站人数统计/人',
+                textStyle:{
+                    fontSize:20,
+                    color:'#F8F8FF',
+                    },
+                },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: '#8B4513'
+                    }
+                 }
+            },
+            color:['#ff0000','#00FF00'],
+            legend: {
+                y:'bottom',
+                data:[{name:'当天',textStyle:{color:'#F8F8FF',fontSize:18}},
+                 {name:'昨天',textStyle:{color:'#F8F8FF',fontSize:18}}]
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            <!--grid: {-->
+                <!--left: '3%',-->
+                <!--right: '4%',-->
+                <!--bottom: '8%',-->
+                <!--top:'10%',-->
+                <!--containLabel: true,-->
+            <!--},-->
+            grid:{x:28,y:50,x2:30,y2:50},
+            xAxis : [
+                {
+                    type : 'category',
+                    boundaryGap : false,
+                    axisLine:{lineStyle:{color:'#F8F8FF',width:2}},
+                    data : ['1点', '2点', '3点', '4点', '5点', '6点', '7点', '8点', '9点', '10点', '11点', '12点', '13点', '14点', '15点', '16点', '17点', '18点', '19点', '20点', '21点',
+ '22点', '23点', '24点']
+
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    axisLine:{lineStyle:{color:'#F8F8FF',width:2}},
+                }
+            ],
+            series : [
+                {
+                    name:'当天',
+                    type:'line',
+                    <!--stack: '总量',-->
+                    itemStyle : {
+                        normal : {
+                            lineStyle:{
+                                color:'#ff0000',
+                                }
+                            }
+                        },
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'top',
+                            color:'#F8F8FF',
+                            }
+                        },
+                    areaStyle: {normal:{color:'#FF6347',}},
+                    hoverAnimation: true,
+                    data:[],
+                },
+
+                {
+                    name:'昨天',
+                    type:'line',
+                    smooth: true,
+                    <!--stack: '总量',-->
+                    itemStyle : {
+                        normal : {
+                            lineStyle:{
+                                color:'#00FF00',
+                                }
+                            }
+                        },
+                    label:{},
+                    areaStyle: {normal: {color:'#98FB98',}},
+                    data:[],
+                }
+            ]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+
+        <!--// 异步加载数据-->
+        $(document).ready(function(){
+            function refresh(){
+                $.ajaxSetup({cache:false});
+                $.getJSON("/taiyuan/flow_yesterday",function(ret){
+                option.series[1].data = ret.yesterday,
+                myChart.setOption(option, true);
+                });
+                $.getJSON("/taiyuan/flow_today/", function (ret) {
+                    // 填入数据
+                    option.series[0].data = ret.today,
+                    <!--option.series[1].data = ret.yesterday-->
+                    myChart.setOption(option, true);
+                });
+
+            }
+            setInterval(refresh, 5000)
+            })
+    </script>
+
+</body>
+</html>
